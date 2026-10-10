@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="admin-login-wrapper">
+  <div class="admin-login-card">
+    <div class="admin-login-header">
+      <div class="admin-login-badge">
+        <span class="live-dot pulse"></span> RESTRICTED ACCESS
+      </div>
+      <div class="admin-lock-icon">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <h1 class="admin-login-title">Admin Command Center</h1>
+      <p class="admin-login-subtitle">Authenticate to access patient telemetry and the unified SQLite assessment records database.</p>
+    </div>
+
+    <!-- CREDENTIALS QUICK HINT -->
+    <div class="admin-creds-hint">
+      <div class="hint-header">
+        <i class="fa-solid fa-key"></i>
+        <span>Authorized Credentials</span>
+      </div>
+      <div class="hint-body">
+        <div><strong>Admin ID:</strong> <code>admin</code></div>
+        <div><strong>Password:</strong> <code>admin123</code></div>
+      </div>
+    </div>
+
+    {% if error %}
+    <div class="admin-login-error" role="alert">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span>{{ error }}</span>
+    </div>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('admin_login', next=request.args.get('next', '')) }}" class="admin-login-form">
+      <div class="form-group" style="margin-bottom: 1.25rem;">
+        <label class="form-label" for="loginUsername">
+          <i class="fa-solid fa-user-shield"></i> Admin ID / Username
+        </label>
+        <input 
+          type="text" 
+          class="form-input admin-auth-input" 
+          id="loginUsername" 
+          name="username" 
+          value="admin"
+          placeholder="admin" 
+          required 
+          autocomplete="username"
+          autofocus
+        >
+      </div>
+
+      <div class="form-group" style="margin-bottom: 1.75rem;">
+        <label class="form-label" for="loginPassword">
+          <i class="fa-solid fa-lock"></i> Master Password
+        </label>
+        <div class="key-input-wrapper">
+          <input 
+            type="password" 
+            class="form-input admin-auth-input key-input" 
+            id="loginPassword" 
+            name="password" 
+            placeholder="admin123" 
+            required 
+            autocomplete="current-password"
+          >
+          <button type="button" class="btn-toggle-eye" id="btnToggleLoginPass" aria-label="Toggle password visibility" title="Show/Hide Password">
+            👁
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary btn-auth-submit">
+        <i class="fa-solid fa-arrow-right-to-bracket"></i> Authenticate & Enter Dashboard
+      </button>
+
+      <div class="admin-login-footer">
+        <a href="{{ url_for('index') }}" class="link-back-home">
+          ← Return to OmniSalus Home
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const passInput = document.getElementById('loginPassword');
+    const eyeBtn = document.getElementById('btnToggleLoginPass');
+    if (eyeBtn && passInput) {
+      eyeBtn.addEventListener('click', () => {
+        const isPass = passInput.type === 'password';
+        passInput.type = isPass ? 'text' : 'password';
+        eyeBtn.textContent = isPass ? '🙈' : '👁';
+      });
+    }
+  });
+</script>
+{% endblock %}
