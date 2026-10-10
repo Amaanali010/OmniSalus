@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }} - OmniSalus Health Platform</title>
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/icons.css', v='20261010-r4') }}">
+  
+  <!-- Custom Design System -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v='20261010-r4') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/experience.css', v='20261010-r4') }}">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="{{ url_for('index') }}" class="logo-brand">
+        <div class="logo-icon">
+          <i class="fa-solid fa-heart-pulse"></i>
+        </div>
+        <span>OmniSalus</span>
+      </a>
+
+      <ul class="nav-links" id="mainNav">
+        <li><a href="{{ url_for('index') }}" class="nav-link {% if page_id == 'index' %}active{% endif %}"><i class="fa-solid fa-house"></i> Home</a></li>
+        <li><a href="{{ url_for('heart') }}" class="nav-link {% if page_id == 'heart' %}active{% endif %}"><i class="fa-solid fa-heart"></i> Heart</a></li>
+        <li><a href="{{ url_for('diabetes') }}" class="nav-link {% if page_id == 'diabetes' %}active{% endif %}"><i class="fa-solid fa-droplet"></i> Diabetes</a></li>
+        <li><a href="{{ url_for('stroke') }}" class="nav-link {% if page_id == 'stroke' %}active{% endif %}"><i class="fa-solid fa-brain"></i> Stroke</a></li>
+        <li><a href="{{ url_for('liver') }}" class="nav-link {% if page_id == 'liver' %}active{% endif %}"><i class="fa-solid fa-flask"></i> Liver</a></li>
+        <li><a href="{{ url_for('kidney') }}" class="nav-link {% if page_id == 'kidney' %}active{% endif %}"><i class="fa-solid fa-kidneys"></i> Kidney</a></li>
+        <li><a href="{{ url_for('breast_cancer') }}" class="nav-link {% if page_id == 'breast-cancer' %}active{% endif %}"><i class="fa-solid fa-ribbon"></i> Breast Cancer</a></li>
+        <li><a href="{{ url_for('obesity') }}" class="nav-link {% if page_id == 'obesity' %}active{% endif %}"><i class="fa-solid fa-weight-scale"></i> Obesity</a></li>
+        <li><a href="{{ url_for('admin_panel') }}" class="nav-link nav-link-admin {% if page_id == 'admin' %}active{% endif %}"><i class="fa-solid fa-shield-halved"></i> <span>Admin</span> <span class="admin-live-badge">SQLITE</span></a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button type="button" class="btn-api-key" id="btnGroqKey" title="Configure Groq AI API Key" aria-haspopup="dialog">
+          <span class="key-status-dot" id="navKeyDot"></span>
+          <i class="fa-solid fa-key"></i>
+          <span class="key-btn-text" id="navKeyText">AI Settings</span>
+        </button>
+        <button class="menu-toggle btn-icon" id="menuToggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="mainNav">☰</button>
+      </div>
+
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="main-wrapper">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- CONDITIONAL PAGE-SPECIFIC CHATBOT DRAWER (STRICTLY EXCLUDED ON HOME PAGE) -->
+  {% if page_id != 'index' and page_id != 'home' %}
+  <button class="chatbot-trigger" id="chatTrigger" title="Open Page AI Assistant">
+    <img src="{{ url_for('static', filename='images/omni-robot.png') }}" alt="Open Omni assistant">
+  </button>
+
+  <div class="chatbot-drawer" id="chatDrawer" inert data-page-id="{{ page_id }}">
+    <div class="chat-header">
+      <div class="chat-title">
+        <img class="chat-avatar" src="{{ url_for('static', filename='images/omni-robot.png') }}" alt="">
+        <span>{{ title }} Assistant</span>
+      </div>
+      <div class="chat-header-actions">
+        <button type="button" class="btn-chat-key" id="btnChatKey" title="Configure AI API Key">
+          <span class="key-status-dot" id="chatKeyDot"></span>
+          <i class="fa-solid fa-key"></i>
+          <span id="chatKeyBadge">AI Settings</span>
+        </button>
+        <button class="btn-icon" id="btnCloseChat" style="padding: 0.3rem 0.6rem;">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    </div>
+    <div class="chat-body" id="chatBody" aria-live="polite" role="log">
+      <div class="chat-msg assistant">
+        Hello! I'm <strong>Omni</strong>, your clinical AI companion.<br><br>
+        Ask me anything about your assessment results, health indicators, or personalized lifestyle advice.
+      </div>
+    </div>
+    <form class="chat-input-box" id="chatForm">
+      <input type="text" class="chat-input" id="chatInput" placeholder="Ask about this page's model or fields..." autocomplete="off">
+      <button type="submit" class="btn-primary" style="width: auto; padding: 0.6rem 1rem;">
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </form>
+  </div>
+  {% endif %}
+
+  <!-- GROQ AI API KEY MODAL -->
+  <div class="modal-overlay" id="groqModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-icon-badge">
+            <i class="fa-solid fa-key"></i>
+          </div>
+          <div>
+            <h3 id="modalTitle">Groq AI Settings</h3>
+            <span class="modal-subtitle">Llama 3.3 70B Medical Intelligence</span>
+          </div>
+        </div>
+        <button type="button" class="btn-icon" id="btnCloseGroqModal" aria-label="Close AI settings">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-status-banner" id="modalStatusBanner">
+        <span class="key-status-dot" id="modalStatusDot"></span>
+        <div class="status-banner-text">
+          <strong id="modalStatusTitle">Rule Engine Fallback Mode</strong>
+          <small id="modalStatusSub">Add your Groq API key to unlock real-time LLaMA 3.3 diagnostic guidance.</small>
+        </div>
+      </div>
+
+      <p class="modal-desc">
+        Configure your Groq API Key to power the ultra-fast LLaMA 3.3 70B diagnostic assistant and personalized analysis. Get a free API key at <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" class="link-teal">console.groq.com/keys ↗</a>.
+      </p>
+
+      <div class="form-group" style="margin-bottom: 1.25rem;">
+        <label class="form-label" for="groqKeyInput">Groq API Key</label>
+        <div class="key-input-wrapper">
+          <input type="password" class="form-input key-input" id="groqKeyInput" placeholder="gsk_..." autocomplete="off" spellcheck="false">
+          <button type="button" class="btn-toggle-eye" id="btnToggleKeyVisibility" aria-label="Show or hide API key" title="Show/Hide Key">
+            👁
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 1.25rem;">
+        <label class="form-label" for="groqModelSelect">AI Model Selection</label>
+        <select class="form-input" id="groqModelSelect" style="padding: 0.65rem 0.85rem; cursor: pointer; width: 100%; border-radius: 8px;">
+          <option value="auto">⚡ Auto-Detect Best Active Model (Recommended)</option>
+          <option value="llama-3.3-70b-versatile">Meta LLaMA 3.3 70B (llama-3.3-70b-versatile)</option>
+          <option value="llama-3.1-8b-instant">Meta LLaMA 3.1 8B Instant (llama-3.1-8b-instant)</option>
+          <option value="llama-3.1-70b-versatile">Meta LLaMA 3.1 70B (llama-3.1-70b-versatile)</option>
+          <option value="mixtral-8x7b-32768">Mixtral 8x7B (mixtral-8x7b-32768)</option>
+          <option value="gemma2-9b-it">Gemma 2 9B (gemma2-9b-it)</option>
+        </select>
+        <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.35rem; display: block;">
+          Auto-Detect aapke Groq key tier ke mutabiq best accessible model connect karta hai (jaise LLaMA 3.3 ya 3.1 8B).
+        </small>
+      </div>
+
+      <div class="modal-actions-row">
+        <button type="button" class="btn-primary" id="btnSaveGroqKey">
+          <i class="fa-solid fa-floppy-disk"></i> Save Key
+        </button>
+        <button type="button" class="btn-secondary" id="btnTestGroqKey">
+          Test Connection
+        </button>
+        <button type="button" class="btn-danger-outline" id="btnClearGroqKey" title="Remove stored API key">
+          Clear
+        </button>
+      </div>
+
+      <div class="modal-footer-hint" id="modalTestResult" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <footer class="site-footer"><a href="/" class="footer-brand">✧ OmniSalus</a><span>Built for curiosity. Designed for clarity.</span><small>UI r4 - Server PDF · Educational prototype · Model outputs are not a medical diagnosis.</small></footer><div id="toast" role="status" class="toast"></div>
+  <script src="{{ url_for('static', filename='js/main.js', v='20261010-r4') }}"></script>
+  <script src="{{ url_for('static', filename='js/experience.js', v='20261010-r4') }}"></script>
+</body>
+</html>

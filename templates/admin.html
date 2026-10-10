@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="admin-dashboard-container">
+  <!-- ADMIN HEADER -->
+  <header class="admin-header">
+    <div class="admin-header-main">
+      <div class="admin-badge">
+        <span class="live-dot pulse"></span> SQLITE CLINICAL DATABASE
+      </div>
+      <h1 class="admin-title">Unified Assessment Telemetry</h1>
+      <p class="admin-subtitle">Centralized patient diagnostic submissions recorded with exact timespans across all 7 disease modules.</p>
+    </div>
+    <div class="admin-header-actions">
+      <button type="button" class="secondary-button" id="btnRefreshAdmin">
+        <i class="fa-solid fa-arrows-rotate"></i> Refresh
+      </button>
+      <a href="/api/admin/export" class="btn-primary" id="btnExportCsv" download>
+        <i class="fa-solid fa-file-arrow-down"></i> Export CSV
+      </a>
+      <a href="{{ url_for('admin_logout') }}" class="btn-logout" title="Sign out of Admin Session">
+        <i class="fa-solid fa-right-from-bracket"></i> Logout
+      </a>
+    </div>
+  </header>
+
+  <!-- KPI SUMMARY STATS CARDS -->
+  <div class="admin-kpi-grid">
+    <div class="kpi-card" id="kpiTotal">
+      <div class="kpi-icon-wrap icon-cyan">
+        <i class="fa-solid fa-database"></i>
+      </div>
+      <div class="kpi-info">
+        <span class="kpi-label">Total Assessments</span>
+        <h3 class="kpi-value" id="statTotalAssessments">0</h3>
+        <small class="kpi-sub">Across all 7 modules</small>
+      </div>
+    </div>
+
+    <div class="kpi-card" id="kpiToday">
+      <div class="kpi-icon-wrap icon-emerald">
+        <i class="fa-solid fa-clock"></i>
+      </div>
+      <div class="kpi-info">
+        <span class="kpi-label">Today's Submissions</span>
+        <h3 class="kpi-value" id="statTodayAssessments">0</h3>
+        <small class="kpi-sub" id="statTodayDate">Recorded today</small>
+      </div>
+    </div>
+
+    <div class="kpi-card" id="kpiHighRisk">
+      <div class="kpi-icon-wrap icon-rose">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <div class="kpi-info">
+        <span class="kpi-label">High Risk Alerts</span>
+        <h3 class="kpi-value" id="statHighRiskAlerts">0</h3>
+        <small class="kpi-sub">Critical patient tier detections</small>
+      </div>
+    </div>
+
+    <div class="kpi-card" id="kpiTopModule">
+      <div class="kpi-icon-wrap icon-purple">
+        <i class="fa-solid fa-chart-pie"></i>
+      </div>
+      <div class="kpi-info">
+        <span class="kpi-label">Top Active Module</span>
+        <h3 class="kpi-value text-capitalize" id="statTopModule">Heart</h3>
+        <small class="kpi-sub">Most frequent assessment</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE FILTER TABS -->
+  <div class="admin-filter-strip">
+    <div class="module-chips-scroll" role="tablist">
+      <button type="button" class="admin-chip active" data-model="all" role="tab" aria-selected="true">
+        <i class="fa-solid fa-layer-group"></i> All Modules
+      </button>
+      <button type="button" class="admin-chip" data-model="heart" role="tab">
+        <i class="fa-solid fa-heart-pulse"></i> Heart Disease
+      </button>
+      <button type="button" class="admin-chip" data-model="diabetes" role="tab">
+        <i class="fa-solid fa-droplet"></i> Diabetes
+      </button>
+      <button type="button" class="admin-chip" data-model="stroke" role="tab">
+        <i class="fa-solid fa-brain"></i> Stroke
+      </button>
+      <button type="button" class="admin-chip" data-model="liver" role="tab">
+        <i class="fa-solid fa-flask"></i> Liver Health
+      </button>
+      <button type="button" class="admin-chip" data-model="kidney" role="tab">
+        <i class="fa-solid fa-kidneys"></i> Kidney & Renal
+      </button>
+      <button type="button" class="admin-chip" data-model="breast-cancer" role="tab">
+        <i class="fa-solid fa-ribbon"></i> Breast Cancer
+      </button>
+      <button type="button" class="admin-chip" data-model="obesity" role="tab">
+        <i class="fa-solid fa-weight-scale"></i> Obesity
+      </button>
+    </div>
+  </div>
+
+  <!-- SEARCH & SEVERITY CONTROLS -->
+  <div class="admin-search-toolbar">
+    <div class="search-input-wrap">
+      <i class="fa-solid fa-magnifying-glass search-icon"></i>
+      <input type="search" class="admin-search-box" id="adminSearchInput" placeholder="Search by diagnosis, biomarkers, patient inputs, or ID..." autocomplete="off">
+    </div>
+
+    <div class="toolbar-right-controls">
+      <select class="admin-select" id="adminSeverityFilter">
+        <option value="all">All Severities</option>
+        <option value="high">High Risk / Alert</option>
+        <option value="moderate">Moderate Risk</option>
+        <option value="low">Low / Normal Risk</option>
+      </select>
+
+      <span class="admin-record-counter" id="recordCounter">Showing 0 records</span>
+    </div>
+  </div>
+
+  <!-- SUBMISSIONS DATA TABLE -->
+  <div class="admin-table-container">
+    <table class="admin-table" id="adminTable">
+      <thead>
+        <tr>
+          <th style="width: 70px;">ID</th>
+          <th style="width: 210px;">Timespan / Recorded</th>
+          <th style="width: 160px;">Module</th>
+          <th>Diagnosis Finding</th>
+          <th style="width: 140px;">Severity Tier</th>
+          <th style="width: 130px;">Score / Risk</th>
+          <th style="width: 120px; text-align: right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="adminTableBody">
+        <tr>
+          <td colspan="7" class="table-loading-cell">
+            <i class="fa-solid fa-spinner fa-spin"></i> Loading assessments from SQLite database...
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- EMPTY STATE -->
+    <div class="admin-empty-state" id="adminEmptyState" style="display: none;">
+      <div class="empty-icon-wrap">
+        <i class="fa-solid fa-clipboard-question"></i>
+      </div>
+      <h3>No Assessment Records Found</h3>
+      <p id="emptyStateMsg">No assessments have been recorded yet or no records match your filter criteria.</p>
+      <a href="{{ url_for('heart') }}" class="btn-primary" style="margin-top: 1rem;">
+        Fill an Assessment to Test ↗
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- RECORD DETAILS MODAL -->
+<div class="modal-overlay" id="recordDetailModal" role="dialog" aria-modal="true" aria-labelledby="modalDetailTitle">
+  <div class="modal-content admin-detail-modal">
+    <div class="modal-header">
+      <div class="modal-title-wrap">
+        <div class="modal-icon-badge" id="modalDetailIcon">
+          <i class="fa-solid fa-file-medical"></i>
+        </div>
+        <div>
+          <h3 id="modalDetailTitle">Assessment Details</h3>
+          <span class="modal-subtitle" id="modalDetailSubtitle">Record # --</span>
+        </div>
+      </div>
+      <button type="button" class="btn-icon" id="btnCloseDetailModal" aria-label="Close details">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- SUMMARY PILLS -->
+    <div class="detail-summary-bar">
+      <div class="detail-pill">
+        <small>Timespan</small>
+        <strong id="detailTimespan">--</strong>
+      </div>
+      <div class="detail-pill">
+        <small>Disease Suite</small>
+        <strong id="detailModule" class="text-capitalize">--</strong>
+      </div>
+      <div class="detail-pill">
+        <small>Severity Tier</small>
+        <strong id="detailSeverity">--</strong>
+      </div>
+      <div class="detail-pill">
+        <small>Primary Metric</small>
+        <strong id="detailScore">--</strong>
+      </div>
+    </div>
+
+    <!-- DIAGNOSIS BANNER -->
+    <div class="detail-diagnosis-banner" id="detailDiagBanner">
+      <i class="fa-solid fa-circle-check"></i>
+      <div>
+        <strong>Diagnosis Finding</strong>
+        <p id="detailDiagnosisText">--</p>
+      </div>
+    </div>
+
+    <!-- BIOMARKERS GRID -->
+    <div class="detail-section-title">
+      <i class="fa-solid fa-list-check"></i> Submitted Patient Biomarkers & Inputs
+    </div>
+    <div class="biomarkers-grid" id="biomarkersGrid">
+      <!-- Injected via JS -->
+    </div>
+
+    <!-- MODEL RESULTS EXPANDER -->
+    <div class="detail-section-title" style="margin-top: 1.5rem;">
+      <i class="fa-solid fa-chart-line"></i> Raw Model Calculation Output
+    </div>
+    <pre class="raw-output-box" id="rawOutputBox"></pre>
+
+    <div class="modal-actions-row" style="margin-top: 1.5rem; justify-content: flex-end;">
+      <button type="button" class="btn-primary" id="btnCloseDetailModalBtn">
+        Close Details
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/admin.js', v='20261010-r5') }}"></script>
+{% endblock %}

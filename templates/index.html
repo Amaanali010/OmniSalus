@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="new-hero">
+ <div class="hero-copy">
+  <div class="eyebrow"><span class="live-dot"></span> A NEW PERSPECTIVE ON HEALTH</div>
+  <h1>Understand more.<br><span>Care smarter.</span></h1>
+  <p>Your health has a story. Explore the patterns with AI-powered assessments and a little help from Omni.</p>
+  <div class="hero-actions"><a href="#assessments" class="btn-primary">Explore assessments <span>↗</span></a><a href="#how-it-works" class="secondary-button"><span class="play-icon">▷</span> How it works</a></div>
+  <div class="hero-note"><span>✧</span> Human curiosity. Machine intelligence.</div>
+ </div>
+ <div class="robot-stage" id="robotStage">
+   <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+   <img class="hero-robot" src="{{ url_for('static', filename='images/omni-robot.png') }}" alt="Omni, a white ceramic humanoid robot with glowing teal mechanical details" fetchpriority="high">
+   <div class="robot-label"><span class="live-dot"></span> MEET OMNI <span class="label-line"></span> YOUR AI COMPANION</div>
+   <div class="floating-card robot-message"><span class="spark">✧</span><div><strong>A little insight goes a long way.</strong><small>Let’s explore your health, together.</small></div></div>
+   <div class="floating-card robot-chip"><span>✦</span> Intelligence with a human touch</div>
+ </div>
+</section>
+<section class="platform-strip" aria-label="Platform overview"><div><strong>07<span> / suites</span></strong><small>A broader view of health</small></div><div><strong>09<span> / models</span></strong><small>Multiple perspectives, one platform</small></div><div><strong>01<span> / companion</span></strong><small>Guidance at every step</small></div><div class="strip-last"><span class="line-icon">⌁</span><p>Small insights.<br><b>More informed conversations.</b></p></div></section>
+<section id="assessments" class="assessment-section">
+ <div class="section-header"><div><div class="eyebrow">EXPLORE YOUR HEALTH</div><h2 class="section-title">A starting point for every question.</h2><p class="section-desc">Choose an assessment to explore your health indicators.</p></div><label class="search-box"><span>⌕</span><input type="search" id="suiteSearch" placeholder="Find an assessment…" aria-label="Find an assessment"></label></div>
+ <div class="filter-bar" role="group" aria-label="Filter assessments"><button class="filter-chip active" data-filter="all" aria-pressed="true">All assessments <span>7</span></button><button class="filter-chip" data-filter="lifestyle" aria-pressed="false">Lifestyle & wellness</button><button class="filter-chip" data-filter="clinical" aria-pressed="false">Clinical indicators</button><span class="filter-count" id="filterCount" aria-live="polite">7 assessments</span></div>
+  <div class="models-grid">
+    
+    <!-- 1. HEART DISEASE -->
+    <div class="model-card">
+      <div>
+        <div class="model-card-header">
+          <div class="model-icon-box icon-heart">
+            <i class="fa-solid fa-heart-pulse"></i>
+          </div>
+          <span class="accuracy-chip">Explore assessment ↗</span>
+        </div>
+        <h3 class="model-card-title">Heart Disease Suite</h3>
+        <p class="model-card-desc">Features 3 model pipelines (LightGBM, XGBoost, LogReg) comparing 18 clinical features including BMI, smoking, and sleep.</p>
+        <div class="model-features-preview">
+          <span class="feature-tag">18 Inputs</span>
+          <span class="feature-tag">3 Models</span>
+          <span class="feature-tag">BMI Calc</span>
+        </div>
+      </div>
+      <a href="{{ url_for('heart') }}" class="btn-primary">
+        Start assessment <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- 2. DIABETES -->
+    <div class="model-card">
+      <div>
+        <div class="model-card-header">
+          <div class="model-icon-box icon-diabetes">
+            <i class="fa-solid fa-droplet"></i>
+          </div>
+          <span class="accuracy-chip">Explore assessment ↗</span>
+        </div>
+        <h3 class="model-card-title">Diabetes Risk Model</h3>
+        <p class="model-card-desc">XGBoostTuned classifier analyzing 21 risk indicators including blood pressure, cholesterol, diet, and physical activity.</p>
+        <div class="model-features-preview">
+          <span class="feature-tag">21 Inputs</span>
+          <span class="feature-tag">XGBoostTuned</span>
+          <span class="feature-tag">Glycemic</span>
+        </div>
+      </div>
+      <a href="{{ url_for('diabetes') }}" class="btn-primary">
+        Start assessment <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- 3. STROKE -->
+    <div class="model-card">
+      <div>
+        <div class="model-card-header">
+          <div class="model-icon-box icon-stroke">
+            <i class="fa-solid fa-brain"></i>
+          </div>
+          <span class="accuracy-chip">Explore assessment ↗</span>
+        </div>
+        <h3 class="model-card-title">Stroke Risk Classifier</h3>
+        <p class="model-card-desc">XGBoost algorithm evaluating cerebrovascular risk factors such as age, hypertension, glucose levels, and marital/work status.</p>
+        <div class="model-features-preview">
+          <span class="feature-tag">11 Inputs</span>
+          <span class="feature-tag">XGBoost</span>
+          <span class="feature-tag">Glucose</span>
+        </div>
+      </div>
+      <a href="{{ url_for('stroke') }}" class="btn-primary">
+        Start assessment <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- 4. LIVER -->
+    <div class="model-card">
+      <div>
+        <div class="model-card-header">
+          <div class="model-icon-box icon-liver">
+            <i class="fa-solid fa-flask"></i>
+          </div>
+          <span class="accuracy-chip">Explore assessment ↗</span>
+        </div>
+        <h3 class="model-card-title">Liver Health Diagnostics</h3>
+        <p class="model-card-desc">HistGradientBoosting multi-class model classifying Healthy Donors, Hepatitis, Fibrosis, and Cirrhosis from lab test values.</p>
+        <div class="model-features-preview">
+          <span class="feature-tag">10 Lab Tests</span>
+          <span class="feature-tag">HistGradient</span>
+          <span class="feature-tag">5 Classes</span>
+        </div>
+      </div>
+      <a href="{{ url_for('liver') }}" class="btn-primary">
+        Start assessment <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- 5. KIDNEY -->
+    <div class="model-card">
+      <div>
+        <div class="model-card-header">
+          <div class="model-icon-box icon-kidney">
+            <i class="fa-solid fa-droplet"></i>
+          </div>
+          <span class="accuracy-chip">Explore assessment ↗</span>
+        </div>
+        <h3 class="model-card-title">Kidney Disease (CKD)</h3>
+        <p class="model-card-desc">RandomForestClassifier predicting renal dysfunction across 24 clinical parameters including creatinine, blood urea, and specific gravity.</p>
+        <div class="model-features-preview">
+          <span class="feature-tag">24 Inputs</span>
+          <span class="feature-tag">RandomForest</span>
+          <span class="feature-tag">CKD Staging</span>
+        </div>
+      </div>
+      <a href="{{ url_for('kidney') }}" class="btn-primary">
+        Start assessment <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- 6. BREAST CANCER -->
+    <div class="model-card">
+      <div>
+        <div class="model-card-header">
+          <div class="model-icon-box icon-cancer">
+            <i class="fa-solid fa-ribbon"></i>
+          </div>
+          <span class="accuracy-chip">Explore assessment ↗</span>
+        </div>
+        <h3 class="model-card-title">Breast Cancer Model</h3>
+        <p class="model-card-desc">RandomForest model computing Benign vs Malignant tissue probability based on 7 nuclear morphometric mean attributes.</p>
+        <div class="model-features-preview">
+          <span class="feature-tag">7 Mean Features</span>
+          <span class="feature-tag">RandomForest</span>
+          <span class="feature-tag">Biopsy</span>
+        </div>
+      </div>
+      <a href="{{ url_for('breast_cancer') }}" class="btn-primary">
+        Start assessment <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- 7. OBESITY -->
+    <div class="model-card">
+      <div>
+        <div class="model-card-header">
+          <div class="model-icon-box icon-obesity">
+            <i class="fa-solid fa-weight-scale"></i>
+          </div>
+          <span class="accuracy-chip">Explore assessment ↗</span>
+        </div>
+        <h3 class="model-card-title">Obesity Level Classifier</h3>
+        <p class="model-card-desc">HistGradientBoosting model classifying 7 body mass categories based on physical activity, meals, water intake, and transport.</p>
+        <div class="model-features-preview">
+          <span class="feature-tag">14 Inputs</span>
+          <span class="feature-tag">HistGradient</span>
+          <span class="feature-tag">7 Levels</span>
+        </div>
+      </div>
+      <a href="{{ url_for('obesity') }}" class="btn-primary">
+        Start assessment <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<p class="empty-search" id="emptySearch" hidden>No matching assessments. Try another search or category.</p>
+<section class="how-section" id="how-it-works"><div class="section-header"><div><div class="eyebrow">CLARITY, STEP BY STEP</div><h2 class="section-title">From information to insight.</h2></div><span class="section-desc">Three simple steps to get started.</span></div><div class="steps-grid"><article><span>01</span><h3>Choose your focus</h3><p>Pick one of seven assessments based on the indicators you want to explore.</p></article><article><span>02</span><h3>Add your information</h3><p>Review the example values and enter your own measurements or lab results.</p></article><article><span>03</span><h3>Explore the result</h3><p>See the model output and ask Omni to explain the fields and terminology.</p></article></div></section>
+<section class="closing-banner"><div><div class="eyebrow">YOUR NEXT STEP</div><h2>Better questions start<br>with a little understanding.</h2><p>Explore your indicators. Bring your questions to a healthcare professional.</p></div><a href="#assessments" class="btn-primary">Find your assessment ↗</a></section>
+{% endblock %}

@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="calculator-layout">
+  <div class="calc-card">
+    <div class="calc-header">
+      <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.5rem;">
+        <div class="model-icon-box icon-diabetes"><i class="fa-solid fa-droplet"></i></div>
+        <div>
+          <h1 style="font-family:var(--font-heading); font-size:1.8rem; font-weight:700;">Diabetes Risk Calculator</h1>
+          <p style="color:var(--text-muted); font-size:0.9rem;">XGBoostTuned Classifier (70.8% Accuracy) over 21 indicators</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="report-toolbar" style="padding:16px;border:1px solid var(--border-glass);border-radius:12px;margin-bottom:24px;">
+      <form id="reportDownloadForm" method="post" action="/api/report">
+        <input id="reportToken" type="hidden" name="report_token" value="">
+        <button id="downloadReport" type="submit" class="btn-primary" disabled>Download result PDF</button>
+      </form>
+      <p id="reportHint" style="font-size:12px;color:var(--text-muted);margin-top:10px;" aria-live="polite">Run the assessment below to enable your report download.</p>
+    </div>
+    <form class="prediction-form" data-model-type="diabetes">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">High Blood Pressure</label>
+          <select class="form-select" name="HighBP" required>
+            <option value="0">No</option>
+            <option value="1">Yes</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">High Cholesterol</label>
+          <select class="form-select" name="HighChol" required>
+            <option value="0">No</option>
+            <option value="1">Yes</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Cholesterol Checked (5 yrs)</label>
+          <select class="form-select" name="CholCheck" required>
+            <option value="1" selected>Yes</option>
+            <option value="0">No</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Body Mass Index (BMI)</label>
+          <input type="number" class="form-input" name="BMI" value="26.5" step="0.1" min="10" max="60" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Smoked 100+ Cigarettes</label>
+          <select class="form-select" name="Smoker" required>
+            <option value="0">No</option>
+            <option value="1">Yes</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Ever Had Stroke</label>
+          <select class="form-select" name="Stroke" required>
+            <option value="0">No</option>
+            <option value="1">Yes</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Heart Disease / Attack</label>
+          <select class="form-select" name="HeartDiseaseorAttack" required>
+            <option value="0">No</option>
+            <option value="1">Yes</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Physical Activity (30d)</label>
+          <select class="form-select" name="PhysActivity" required>
+            <option value="1" selected>Yes</option>
+            <option value="0">No</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Eat Fruit 1+ time/day</label>
+          <select class="form-select" name="Fruits" required>
+            <option value="1" selected>Yes</option>
+            <option value="0">No</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Eat Veggies 1+ time/day</label>
+          <select class="form-select" name="Veggies" required>
+            <option value="1" selected>Yes</option>
+            <option value="0">No</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Heavy Alcohol Consump</label>
+          <select class="form-select" name="HvyAlcoholConsump" required>
+            <option value="0">No</option>
+            <option value="1">Yes</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Any Healthcare Coverage</label>
+          <select class="form-select" name="AnyHealthcare" required>
+            <option value="1" selected>Yes</option>
+            <option value="0">No</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">No Doctor because Cost</label>
+          <select class="form-select" name="NoDocbcCost" required>
+            <option value="0">No</option>
+            <option value="1">Yes</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">General Health (1-5)</label>
+          <select class="form-select" name="GenHlth" required>
+            <option value="1">1 - Excellent</option>
+            <option value="2" selected>2 - Very Good</option>
+            <option value="3">3 - Good</option>
+            <option value="4">4 - Fair</option>
+            <option value="5">5 - Poor</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Poor Mental Health Days</label>
+          <input type="number" class="form-input" name="MentHlth" value="0" min="0" max="30" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Poor Physical Health Days</label>
+          <input type="number" class="form-input" name="PhysHlth" value="0" min="0" max="30" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Difficulty Walking</label>
+          <select class="form-select" name="DiffWalk" required>
+            <option value="0">No</option>
+            <option value="1">Yes</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Sex</label>
+          <select class="form-select" name="Sex" required>
+            <option value="0">Female</option>
+            <option value="1">Male</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Age Scale (1-13)</label>
+          <select class="form-select" name="Age" required>
+            <option value="1">1 (18-24)</option>
+            <option value="4">4 (35-39)</option>
+            <option value="7" selected>7 (50-54)</option>
+            <option value="9">9 (60-64)</option>
+            <option value="13">13 (80+)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Education Level (1-6)</label>
+          <select class="form-select" name="Education" required>
+            <option value="4">High School</option>
+            <option value="5">Some College</option>
+            <option value="6" selected>College Graduate</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Income Level (1-8)</label>
+          <select class="form-select" name="Income" required>
+            <option value="4">$20k - $25k</option>
+            <option value="6">$35k - $50k</option>
+            <option value="8" selected>$75k+</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:1.5rem; text-align:right;">
+        <button type="submit" class="btn-primary" style="width:auto; padding:0.8rem 2rem;">
+          <i class="fa-solid fa-calculator"></i> Compute Diabetes Risk Score
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="results-card" id="resultCard" style="display:none;">
+    <h3 style="font-family:var(--font-heading); font-size:1.3rem;">Diabetes Risk Score</h3>
+    <div class="gauge-container">
+      <svg class="gauge-svg" viewBox="0 0 200 200">
+        <circle class="gauge-bg" cx="100" cy="100" r="80"></circle>
+        <circle class="gauge-fill" id="gaugeFill" cx="100" cy="100" r="80" stroke-dasharray="502" stroke-dashoffset="502"></circle>
+      </svg>
+      <div class="gauge-center-text">
+        <div class="gauge-score" id="scoreText">0%</div>
+        <div class="gauge-unit">Diabetic Risk</div>
+      </div>
+    </div>
+    <div id="severityBadge" class="severity-badge badge-success">Normal Risk</div>
+    <p id="diagText" style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;"></p>
+  </div>
+</div>
+{% endblock %}

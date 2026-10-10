@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="calculator-layout">
+  <div class="calc-card">
+    <div class="calc-header">
+      <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.5rem;">
+        <div class="model-icon-box icon-liver"><i class="fa-solid fa-flask"></i></div>
+        <div>
+          <h1 style="font-family:var(--font-heading); font-size:1.8rem; font-weight:700;">Liver Health Diagnostics</h1>
+          <p style="color:var(--text-muted); font-size:0.9rem;">HistGradientBoosting (99.19% Accuracy) classifying 5 liver health tiers</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="report-toolbar" style="padding:16px;border:1px solid var(--border-glass);border-radius:12px;margin-bottom:24px;">
+      <form id="reportDownloadForm" method="post" action="/api/report">
+        <input id="reportToken" type="hidden" name="report_token" value="">
+        <button id="downloadReport" type="submit" class="btn-primary" disabled>Download result PDF</button>
+      </form>
+      <p id="reportHint" style="font-size:12px;color:var(--text-muted);margin-top:10px;" aria-live="polite">Run the assessment below to enable your report download.</p>
+    </div>
+    <form class="prediction-form" data-model-type="liver">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Age</label>
+          <input type="number" class="form-input" name="Age" value="45" min="1" max="100" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Gender</label>
+          <select class="form-select" name="Sex" required>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Albumin (ALB - g/L)</label>
+          <input type="number" class="form-input" name="ALB" value="38.5" step="0.1" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Alkaline Phosphotase (ALP - U/L)</label>
+          <input type="number" class="form-input" name="ALP" value="52.5" step="0.1" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">ALT / Sgpt (U/L)</label>
+          <input type="number" class="form-input" name="ALT" value="22.0" step="0.1" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">AST / Sgot (U/L)</label>
+          <input type="number" class="form-input" name="AST" value="25.0" step="0.1" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Total Bilirubin (BIL - µmol/L)</label>
+          <input type="number" class="form-input" name="BIL" value="12.0" step="0.1" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Choline Esterase (CHE)</label>
+          <input type="number" class="form-input" name="CHE" value="7.5" step="0.1" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Cholesterol (CHOL - mmol/L)</label>
+          <input type="number" class="form-input" name="CHOL" value="4.8" step="0.1" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Creatinine (CREA - µmol/L)</label>
+          <input type="number" class="form-input" name="CREA" value="75.0" step="0.1" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Gamma-Glutamyl (GGT - U/L)</label>
+          <input type="number" class="form-input" name="GGT" value="18.0" step="0.1" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Total Proteins (PROT - g/L)</label>
+          <input type="number" class="form-input" name="PROT" value="70.0" step="0.1" required>
+        </div>
+      </div>
+
+      <div style="margin-top:1.5rem; text-align:right;">
+        <button type="submit" class="btn-primary" style="width:auto; padding:0.8rem 2rem;">
+          <i class="fa-solid fa-flask"></i> Evaluate Hepatic Function
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="results-card" id="resultCard" style="display:none;">
+    <h3 style="font-family:var(--font-heading); font-size:1.3rem;">Liver Diagnosis Result</h3>
+    <div class="gauge-container">
+      <svg class="gauge-svg" viewBox="0 0 200 200">
+        <circle class="gauge-bg" cx="100" cy="100" r="80"></circle>
+        <circle class="gauge-fill" id="gaugeFill" cx="100" cy="100" r="80" stroke-dasharray="502" stroke-dashoffset="502"></circle>
+      </svg>
+      <div class="gauge-center-text">
+        <div class="gauge-score" id="scoreText">0%</div>
+        <div class="gauge-unit">Confidence</div>
+      </div>
+    </div>
+    <div id="severityBadge" class="severity-badge badge-success">Healthy Blood Donor</div>
+    <p id="diagText" style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;"></p>
+  </div>
+</div>
+{% endblock %}

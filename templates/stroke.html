@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="calculator-layout">
+  <div class="calc-card">
+    <div class="calc-header">
+      <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.5rem;">
+        <div class="model-icon-box icon-stroke"><i class="fa-solid fa-brain"></i></div>
+        <div>
+          <h1 style="font-family:var(--font-heading); font-size:1.8rem; font-weight:700;">Stroke Vulnerability Calculator</h1>
+          <p style="color:var(--text-muted); font-size:0.9rem;">XGBoost Classifier (82.29% Accuracy) assessing cerebrovascular metrics</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="report-toolbar" style="padding:16px;border:1px solid var(--border-glass);border-radius:12px;margin-bottom:24px;">
+      <form id="reportDownloadForm" method="post" action="/api/report">
+        <input id="reportToken" type="hidden" name="report_token" value="">
+        <button id="downloadReport" type="submit" class="btn-primary" disabled>Download result PDF</button>
+      </form>
+      <p id="reportHint" style="font-size:12px;color:var(--text-muted);margin-top:10px;" aria-live="polite">Run the assessment below to enable your report download.</p>
+    </div>
+    <form class="prediction-form" data-model-type="stroke">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Age (years)</label>
+          <input type="number" class="form-input" name="age" value="58" min="1" max="110" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Hypertension</label>
+          <select class="form-select" name="hypertension" required>
+            <option value="0">No</option>
+            <option value="1">Yes</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Heart Disease</label>
+          <select class="form-select" name="heart_disease" required>
+            <option value="0">No</option>
+            <option value="1">Yes</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Avg Glucose Level (mg/dL)</label>
+          <input type="number" class="form-input" name="avg_glucose_level" value="95.5" step="0.1" min="40" max="300" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Body Mass Index (BMI)</label>
+          <input type="number" class="form-input" name="bmi" value="27.2" step="0.1" min="10" max="70" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Gender</label>
+          <select class="form-select" name="gender" required>
+            <option value="Female">Female</option>
+            <option value="Male">Male</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Ever Married</label>
+          <select class="form-select" name="ever_married" required>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Work Type</label>
+          <select class="form-select" name="work_type" required>
+            <option value="Private">Private</option>
+            <option value="Self-employed">Self-employed</option>
+            <option value="Govt_job">Govt Job</option>
+            <option value="children">Children</option>
+            <option value="Never_worked">Never Worked</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Residence Type</label>
+          <select class="form-select" name="Residence_type" required>
+            <option value="Urban">Urban</option>
+            <option value="Rural">Rural</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Smoking Status</label>
+          <select class="form-select" name="smoking_status" required>
+            <option value="never smoked">Never Smoked</option>
+            <option value="formerly smoked">Formerly Smoked</option>
+            <option value="smokes">Smokes</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:1.5rem; text-align:right;">
+        <button type="submit" class="btn-primary" style="width:auto; padding:0.8rem 2rem;">
+          <i class="fa-solid fa-brain"></i> Calculate Stroke Risk
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="results-card" id="resultCard" style="display:none;">
+    <h3 style="font-family:var(--font-heading); font-size:1.3rem;">Stroke Vulnerability Score</h3>
+    <div class="gauge-container">
+      <svg class="gauge-svg" viewBox="0 0 200 200">
+        <circle class="gauge-bg" cx="100" cy="100" r="80"></circle>
+        <circle class="gauge-fill" id="gaugeFill" cx="100" cy="100" r="80" stroke-dasharray="502" stroke-dashoffset="502"></circle>
+      </svg>
+      <div class="gauge-center-text">
+        <div class="gauge-score" id="scoreText">0%</div>
+        <div class="gauge-unit">Stroke Risk</div>
+      </div>
+    </div>
+    <div id="severityBadge" class="severity-badge badge-success">Normal Risk</div>
+    <p id="diagText" style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;"></p>
+  </div>
+</div>
+{% endblock %}

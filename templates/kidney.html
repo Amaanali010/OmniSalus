@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="calculator-layout">
+  <div class="calc-card">
+    <div class="calc-header">
+      <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.5rem;">
+        <div class="model-icon-box icon-kidney"><i class="fa-solid fa-kidneys"></i></div>
+        <div>
+          <h1 style="font-family:var(--font-heading); font-size:1.8rem; font-weight:700;">Kidney Disease (CKD) Calculator</h1>
+          <p style="color:var(--text-muted); font-size:0.9rem;">RandomForestClassifier (100% Accuracy) analyzing 24 renal parameters</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="report-toolbar" style="padding:16px;border:1px solid var(--border-glass);border-radius:12px;margin-bottom:24px;">
+      <form id="reportDownloadForm" method="post" action="/api/report">
+        <input id="reportToken" type="hidden" name="report_token" value="">
+        <button id="downloadReport" type="submit" class="btn-primary" disabled>Download result PDF</button>
+      </form>
+      <p id="reportHint" style="font-size:12px;color:var(--text-muted);margin-top:10px;" aria-live="polite">Run the assessment below to enable your report download.</p>
+    </div>
+    <form class="prediction-form" data-model-type="kidney">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Age</label>
+          <input type="number" class="form-input" name="age" value="50" min="1" max="100" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Blood Pressure (BP - mm/Hg)</label>
+          <input type="number" class="form-input" name="bp" value="80" min="50" max="200" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Specific Gravity (SG)</label>
+          <select class="form-select" name="sg" required>
+            <option value="1.005">1.005</option>
+            <option value="1.010">1.010</option>
+            <option value="1.015">1.015</option>
+            <option value="1.020" selected>1.020</option>
+            <option value="1.025">1.025</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Albumin (AL 0-5)</label>
+          <select class="form-select" name="al" required>
+            <option value="0" selected>0 - Normal</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5 - Severe</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Sugar Level (SU 0-5)</label>
+          <select class="form-select" name="su" required>
+            <option value="0" selected>0 - Normal</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">RBC (0: Normal, 1: Abn)</label>
+          <select class="form-select" name="rbc" required>
+            <option value="0" selected>0 - Normal</option>
+            <option value="1">1 - Abnormal</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Pus Cell (0: Normal, 1: Abn)</label>
+          <select class="form-select" name="pc" required>
+            <option value="0" selected>0 - Normal</option>
+            <option value="1">1 - Abnormal</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Pus Cell Clumps (0/1)</label>
+          <select class="form-select" name="pcc" required>
+            <option value="0" selected>0 - Not Present</option>
+            <option value="1">1 - Present</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Bacteria (0/1)</label>
+          <select class="form-select" name="ba" required>
+            <option value="0" selected>0 - Not Present</option>
+            <option value="1">1 - Present</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Blood Glucose Random (BGR)</label>
+          <input type="number" class="form-input" name="bgr" value="121" min="50" max="500" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Blood Urea (BU - mg/dL)</label>
+          <input type="number" class="form-input" name="bu" value="36" min="10" max="300" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Serum Creatinine (SC - mg/dL)</label>
+          <input type="number" class="form-input" name="sc" value="1.2" step="0.1" min="0.4" max="20" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Sodium (SOD - mEq/L)</label>
+          <input type="number" class="form-input" name="sod" value="138" min="100" max="180" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Potassium (POT - mEq/L)</label>
+          <input type="number" class="form-input" name="pot" value="4.4" step="0.1" min="2" max="10" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Hemoglobin (HEMO - g/dL)</label>
+          <input type="number" class="form-input" name="hemo" value="15.4" step="0.1" min="3" max="20" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Packed Cell Volume (PCV)</label>
+          <input type="number" class="form-input" name="pcv" value="44" min="10" max="60" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">WBC Count (WC - cells/cumm)</label>
+          <input type="number" class="form-input" name="wc" value="7800" min="2000" max="30000" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">RBC Count (RC - millions/cmm)</label>
+          <input type="number" class="form-input" name="rc" value="5.2" step="0.1" min="1" max="10" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Hypertension (HTN)</label>
+          <select class="form-select" name="htn" required>
+            <option value="0" selected>No</option>
+            <option value="1">Yes</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Diabetes Mellitus (DM)</label>
+          <select class="form-select" name="dm" required>
+            <option value="0" selected>No</option>
+            <option value="1">Yes</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Coronary Artery Disease</label>
+          <select class="form-select" name="cad" required>
+            <option value="0" selected>No</option>
+            <option value="1">Yes</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Appetite (0: Good, 1: Poor)</label>
+          <select class="form-select" name="appet" required>
+            <option value="0" selected>Good</option>
+            <option value="1">Poor</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Pedal Edema (PE)</label>
+          <select class="form-select" name="pe" required>
+            <option value="0" selected>No</option>
+            <option value="1">Yes</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Anemia (ANE)</label>
+          <select class="form-select" name="ane" required>
+            <option value="0" selected>No</option>
+            <option value="1">Yes</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:1.5rem; text-align:right;">
+        <button type="submit" class="btn-primary" style="width:auto; padding:0.8rem 2rem;">
+          <i class="fa-solid fa-kidneys"></i> Compute Renal Function Score
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="results-card" id="resultCard" style="display:none;">
+    <h3 style="font-family:var(--font-heading); font-size:1.3rem;">Renal Staging Result</h3>
+    <div class="gauge-container">
+      <svg class="gauge-svg" viewBox="0 0 200 200">
+        <circle class="gauge-bg" cx="100" cy="100" r="80"></circle>
+        <circle class="gauge-fill" id="gaugeFill" cx="100" cy="100" r="80" stroke-dasharray="502" stroke-dashoffset="502"></circle>
+      </svg>
+      <div class="gauge-center-text">
+        <div class="gauge-score" id="scoreText">0%</div>
+        <div class="gauge-unit">Confidence</div>
+      </div>
+    </div>
+    <div id="severityBadge" class="severity-badge badge-success">Normal Function</div>
+    <p id="diagText" style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;"></p>
+  </div>
+</div>
+{% endblock %}

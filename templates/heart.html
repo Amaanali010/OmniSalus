@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="calculator-layout">
+  <!-- FORM SECTION -->
+  <div class="calc-card">
+    <div class="calc-header">
+      <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.5rem;">
+        <div class="model-icon-box icon-heart"><i class="fa-solid fa-heart-pulse"></i></div>
+        <div>
+          <h1 style="font-family:var(--font-heading); font-size:1.8rem; font-weight:700;">Heart Disease Risk Calculator</h1>
+          <p style="color:var(--text-muted); font-size:0.9rem;">Trained on 18 clinical & lifestyle metrics</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODEL VARIANT TOGGLE -->
+    <div class="form-group" style="margin-bottom:1.5rem;">
+      <label class="form-label">Select Algorithm Model</label>
+      <div class="model-toggle-group">
+        <button type="button" class="toggle-btn active" data-variant="all">Compare All 3</button>
+        <button type="button" class="toggle-btn" data-variant="lgbm">LightGBM (83.66%)</button>
+        <button type="button" class="toggle-btn" data-variant="xgb">XGBoost (83.64%)</button>
+        <button type="button" class="toggle-btn" data-variant="logreg">LogReg (83.23%)</button>
+      </div>
+    </div>
+
+    <div class="report-toolbar" style="padding:16px;border:1px solid var(--border-glass);border-radius:12px;margin-bottom:24px;">
+      <form id="reportDownloadForm" method="post" action="/api/report">
+        <input id="reportToken" type="hidden" name="report_token" value="">
+        <button id="downloadReport" type="submit" class="btn-primary" disabled>Download result PDF</button>
+      </form>
+      <p id="reportHint" style="font-size:12px;color:var(--text-muted);margin-top:10px;" aria-live="polite">Run the assessment below to enable your report download.</p>
+    </div>
+    <form class="prediction-form" data-model-type="heart">
+      <div class="form-grid">
+        <!-- 1. Sex -->
+        <div class="form-group">
+          <label class="form-label">Sex</label>
+          <select class="form-select" name="Sex" required>
+            <option value="Female">Female</option>
+            <option value="Male">Male</option>
+          </select>
+        </div>
+
+        <!-- 2. Age Category -->
+        <div class="form-group">
+          <label class="form-label">Age Group</label>
+          <select class="form-select" name="AgeCategory" required>
+            <option value="18-24">18-24</option>
+            <option value="25-29">25-29</option>
+            <option value="30-34">30-34</option>
+            <option value="35-39">35-39</option>
+            <option value="40-44">40-44</option>
+            <option value="45-49">45-49</option>
+            <option value="50-54">50-54</option>
+            <option value="55-59" selected>55-59</option>
+            <option value="60-64">60-64</option>
+            <option value="65-69">65-69</option>
+            <option value="70-74">70-74</option>
+            <option value="75-79">75-79</option>
+            <option value="80 or older">80 or older</option>
+          </select>
+        </div>
+
+        <!-- 3. Race -->
+        <div class="form-group">
+          <label class="form-label">Race / Ethnicity</label>
+          <select class="form-select" name="Race" required>
+            <option value="White" selected>White</option>
+            <option value="Black">Black</option>
+            <option value="Hispanic">Hispanic</option>
+            <option value="Asian">Asian</option>
+            <option value="American Indian/Alaskan Native">American Indian/Alaskan Native</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <!-- 4. Height -->
+        <div class="form-group">
+          <label class="form-label">Height (cm)</label>
+          <input type="number" class="form-input" id="inputHeight" name="Height" value="172" min="100" max="250" required>
+        </div>
+
+        <!-- 5. Weight -->
+        <div class="form-group">
+          <label class="form-label">Weight (kg)</label>
+          <input type="number" class="form-input" id="inputWeight" name="Weight" value="75" min="30" max="250" required>
+        </div>
+
+        <!-- 6. Sleep Hours -->
+        <div class="form-group">
+          <label class="form-label">Sleep per Night (hrs)</label>
+          <input type="number" class="form-input" name="SleepTime" value="7" min="1" max="24" required>
+        </div>
+
+        <!-- 7. General Health -->
+        <div class="form-group">
+          <label class="form-label">General Health</label>
+          <select class="form-select" name="GenHealth" required>
+            <option value="Excellent">Excellent</option>
+            <option value="Very good" selected>Very good</option>
+            <option value="Good">Good</option>
+            <option value="Fair">Fair</option>
+            <option value="Poor">Poor</option>
+          </select>
+        </div>
+
+        <!-- 8. Physical Health Days -->
+        <div class="form-group">
+          <label class="form-label">Poor Phys Health Days (0-30)</label>
+          <input type="number" class="form-input" name="PhysicalHealth" value="0" min="0" max="30" required>
+        </div>
+
+        <!-- 9. Mental Health Days -->
+        <div class="form-group">
+          <label class="form-label">Poor Mental Health Days (0-30)</label>
+          <input type="number" class="form-input" name="MentalHealth" value="0" min="0" max="30" required>
+        </div>
+
+        <!-- 10. Diabetic -->
+        <div class="form-group">
+          <label class="form-label">Diabetes Status</label>
+          <select class="form-select" name="Diabetic" required>
+            <option value="No" selected>No</option>
+            <option value="Yes">Yes</option>
+            <option value="No, borderline diabetes">Borderline</option>
+            <option value="Yes (during pregnancy)">During Pregnancy</option>
+          </select>
+        </div>
+
+        <!-- 11. Diff Walking -->
+        <div class="form-group">
+          <label class="form-label">Diff Walking / Stairs</label>
+          <select class="form-select" name="DiffWalking" required>
+            <option value="No" selected>No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <!-- 12. Kidney Disease -->
+        <div class="form-group">
+          <label class="form-label">Kidney Disease</label>
+          <select class="form-select" name="KidneyDisease" required>
+            <option value="No" selected>No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <!-- 13. Stroke -->
+        <div class="form-group">
+          <label class="form-label">Ever Had Stroke</label>
+          <select class="form-select" name="Stroke" required>
+            <option value="No" selected>No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <!-- 14. Asthma -->
+        <div class="form-group">
+          <label class="form-label">Asthma</label>
+          <select class="form-select" name="Asthma" required>
+            <option value="No" selected>No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <!-- 15. Skin Cancer -->
+        <div class="form-group">
+          <label class="form-label">Skin Cancer</label>
+          <select class="form-select" name="SkinCancer" required>
+            <option value="No" selected>No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <!-- 16. Smoked 100 cigs -->
+        <div class="form-group">
+          <label class="form-label">Smoked 100+ Cigarettes</label>
+          <select class="form-select" name="Smoking" required>
+            <option value="No" selected>No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <!-- 17. Heavy Alcohol -->
+        <div class="form-group">
+          <label class="form-label">Heavy Alcohol Drinking</label>
+          <select class="form-select" name="AlcoholDrinking" required>
+            <option value="No" selected>No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <!-- 18. Physical Activity -->
+        <div class="form-group">
+          <label class="form-label">Physical Activity (last 30d)</label>
+          <select class="form-select" name="PhysicalActivity" required>
+            <option value="Yes" selected>Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:1.5rem; display:flex; justify-content:space-between; align-items:center;">
+        <span id="bmiDisplay" style="color:var(--primary-cyan); font-weight:600; font-size:0.9rem;">Calculated BMI: 25.4</span>
+        <button type="submit" class="btn-primary" style="width:auto; padding:0.8rem 2rem;">
+          <i class="fa-solid fa-heart-pulse"></i> Compute Heart Risk Score
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- RESULTS PANEL -->
+  <div class="results-card" id="resultCard" style="display:none;">
+    <h3 style="font-family:var(--font-heading); font-size:1.3rem;">Heart Disease Diagnostic Score</h3>
+    
+    <!-- GAUGE -->
+    <div class="gauge-container">
+      <svg class="gauge-svg" viewBox="0 0 200 200">
+        <circle class="gauge-bg" cx="100" cy="100" r="80"></circle>
+        <circle class="gauge-fill" id="gaugeFill" cx="100" cy="100" r="80" stroke-dasharray="502" stroke-dashoffset="502"></circle>
+      </svg>
+      <div class="gauge-center-text">
+        <div class="gauge-score" id="scoreText">0%</div>
+        <div class="gauge-unit">Risk Score</div>
+      </div>
+    </div>
+
+    <div id="severityBadge" class="severity-badge badge-success">Normal Risk</div>
+    <p id="diagText" style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;"></p>
+
+    <div id="heartComparisonBox" class="comparison-box" style="display:none;"></div>
+  </div>
+</div>
+{% endblock %}
